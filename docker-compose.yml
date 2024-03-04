@@ -2,27 +2,50 @@ version: '3'
 
 services:
   odoo:
+    container_name: ${PROJ_NAME}
+    command: odoo --dev=all
     build:
       context: .
+      args:
+        - ODOO_VERSION=${ODOO_VERSION}
+        - ODOO_RELEASE=${ODOO_RELEASE}
     depends_on:
       - db
     ports:
-      - "8069:8069"
+      - "${ODOO_EXT_PORT}:8069"
     volumes:
       - odoo:/var/lib/odoo
       - ./config:/etc/odoo
       - ./addons:/mnt/custom-addons
-    restart: always
+    # restart: unless-stopped
   db:
-    image: postgres:14
+    container_name: ${PROJ_NAME}_db
+    image: postgres:${POSTGRES_VERSION}
     environment:
       - POSTGRES_USER=odoo
       - POSTGRES_PASSWORD=odoo
       - POSTGRES_DB=postgres
-    restart: always
+    ports:
+      - "${POSTGRES_EXT_PORT}:5432"
     volumes:
         - db:/var/lib/postgresql/data
+    # restart: unless-stopped
+  pgadmin:
+    container_name: ${PROJ_NAME}_pgadmin
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: josevizcaya0616@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: odoo
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    networks:
+      - postgres_bd
+    volumes:
+        - pgadmin:/root/.pgadmin
+    ports:
+      - "${PGADMIN_EXT_PORT}:80"
+    # restart: unless-stopped
 
 volumes:
   odoo:
   db:
+  pgadmin:
