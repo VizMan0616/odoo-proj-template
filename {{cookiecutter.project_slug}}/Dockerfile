@@ -103,7 +103,7 @@ EXPOSE 8069 8071 8072
 # Set the default config file
 ENV ODOO_RC /etc/odoo/odoo.conf
 
-{% cookiecutter.debug == 'y' %}
+{% if cookiecutter.debug == 'y' %}
 COPY [".isort.cfg", ".eslint.yml", ".pylintrc", "/mnt/"]
 {% endif %}
 COPY wait-for-psql.py /usr/local/bin/wait-for-psql.py
