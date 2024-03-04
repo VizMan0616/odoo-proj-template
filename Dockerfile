@@ -3,8 +3,10 @@ MAINTAINER Odoo S.A. <info@odoo.com>
 
 SHELL ["/bin/bash", "-xo", "pipefail", "-c"]
 
-# Generate locale C.UTF-8 for postgres and general locale data
-ENV LANG C.UTF-8
+# Generate locale C.UTF-8 for postgres and general locale data                
+ENV LANG C.UTF-8                                                              
+ENV TZ=UTC                                                                    
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # Retrieve the target architecture to install the correct wkhtmltopdf package
 ARG TARGETARCH
@@ -66,9 +68,12 @@ RUN curl -sLO "https://github.com/wkhtmltopdf/packaging/files/8632951/wkhtmltox_
 # Install rtlcss (on Debian buster)
 RUN npm install -g rtlcss
 
+# Install Code Quality Tools
+RUN pip install isort black pylint_odoo
+
 # Install Odoo
-ENV ODOO_VERSION 16.0
-ARG ODOO_RELEASE=20231024
+ARG ODOO_VERSION
+ARG ODOO_RELEASE
 RUN curl -o odoo.deb -sSL http://nightly.odoo.com/${ODOO_VERSION}/nightly/deb/odoo_${ODOO_VERSION}.${ODOO_RELEASE}_all.deb \
     && apt-get update \
     && apt-get -y install --no-install-recommends ./odoo.deb \
@@ -81,8 +86,10 @@ COPY ./odoo.conf /etc/odoo/
 # Set permissions and Mount /var/lib/odoo to allow restoring filestore and /mnt/extra-addons for users addons
 RUN chown odoo /etc/odoo/odoo.conf \
     && mkdir -p /mnt/extra-addons \
-    && chown -R odoo /mnt/extra-addons
-VOLUME ["/var/lib/odoo", "/mnt/extra-addons"]
+    && chown -R odoo /mnt/extra-addons \
+    && mkdir -p /mnt/custom-addons \
+    && chown -R odoo /mnt/custom-addons
+VOLUME ["/var/lib/odoo", "/mnt/extra-addons", "/mnt/custom-addons"]
 
 # Expose Odoo services
 EXPOSE 8069 8071 8072
