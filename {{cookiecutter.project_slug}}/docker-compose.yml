@@ -17,7 +17,7 @@ services:
     # restart: unless-stopped
   db:
     container_name: {{ cookiecutter.project_slug }}_db
-    image: postgres:${POSTGRES_VERSION}
+    image: postgres:{{ cookiecutter.postgresql_version }}
     environment:
       - POSTGRES_USER=odoo
       - POSTGRES_PASSWORD=odoo
