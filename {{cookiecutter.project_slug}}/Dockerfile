@@ -15,6 +15,7 @@ ARG TARGETARCH
 RUN apt update \
     && apt install -y --no-install-recommends \
         ca-certificates \
+        curl \
         dirmngr \
         fonts-noto-cjk \
         gnupg \
@@ -51,7 +52,8 @@ RUN apt update \
 
 {% if cookiecutter.ubuntu_release == 'focal' %}
 RUN curl -o wkhtmltox.deb -sSL https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.focal_amd64.deb \
-    && echo 'ae4e85641f004a2097621787bf4381e962fb91e1 wkhtmltox.deb' | sha1sum -c - \                                                  
+    && echo 'ae4e85641f004a2097621787bf4381e962fb91e1 wkhtmltox.deb' | sha1sum -c - \
+    && apt \
     && apt install -y --no-install-recommends ./wkhtmltox.deb \                                                                        
     && rm -rf /var/lib/apt/lists/* wkhtmltox.deb                                                                                       
 
@@ -80,7 +82,7 @@ RUN pip install isort black pylint_odoo
 # Install Odoo
 ARG ODOO_VERSION
 ARG ODOO_RELEASE
-RUN curl -o odoo.deb -sSL http://nightly.odoo.com/{{ cookiecutter.odoo_version }}/nightly/deb/odoo_{{ cookiecutter.odoo_version }}.release_all.deb \
+RUN curl -o odoo.deb -sSL http://nightly.odoo.com/{{ cookiecutter.odoo_version }}/nightly/deb/odoo_{{ cookiecutter.odoo_version }}.latest_all.deb \
     && apt-get update \
     && apt-get -y install --no-install-recommends ./odoo.deb \
     && rm -rf /var/lib/apt/lists/* odoo.deb
