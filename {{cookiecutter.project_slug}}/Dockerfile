@@ -47,6 +47,7 @@ RUN apt update \
         xfonts-base \
         libxrender1 \
         libxext6 \
+        unzip \
     {% endif %}
     && rm -rf /var/lib/apt/lists/*
 
