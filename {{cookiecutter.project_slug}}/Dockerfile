@@ -54,7 +54,7 @@ RUN apt update \
 {% if cookiecutter.ubuntu_release == 'focal' %}
 RUN curl -o wkhtmltox.deb -sSL https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.focal_amd64.deb \
     && echo 'ae4e85641f004a2097621787bf4381e962fb91e1 wkhtmltox.deb' | sha1sum -c - \
-    && apt \
+    && apt update \
     && apt install -y --no-install-recommends ./wkhtmltox.deb \                                                                        
     && rm -rf /var/lib/apt/lists/* wkhtmltox.deb                                                                                       
 
