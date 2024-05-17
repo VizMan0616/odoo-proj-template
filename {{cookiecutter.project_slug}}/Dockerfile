@@ -24,6 +24,10 @@ RUN apt update \
         libssl-dev \
         node-less \
         npm \
+    {% if cookiecutter.odoo_version == "17.0" %}
+        python3-odf \
+        python3-pdfminer \
+    {% endif%}
         python3-num2words \
         python3-pip \
         python3-phonenumbers \
@@ -39,7 +43,6 @@ RUN apt update \
         python3-xlwt \
         xz-utils \
     {% if cookiecutter.ubuntu_release == 'jammy' %}
-        postgresql-client \
         python3-magic \
         xfonts-75dpi \
         libx11-6 \
@@ -67,6 +70,19 @@ RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ focal-pgdg main' > /etc/a
 {% endif %}
 
 {% if cookiecutter.ubuntu_release == 'jammy' %}
+RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ jammy-pgdg main' > /etc/apt/sources.list.d/pgdg.list \
+    && GNUPGHOME="$(mktemp -d)" \
+    && export GNUPGHOME \
+    && repokey='B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8' \
+    && gpg --batch --keyserver keyserver.ubuntu.com --recv-keys "${repokey}" \
+    && gpg --batch --armor --export "${repokey}" > /etc/apt/trusted.gpg.d/pgdg.gpg.asc \
+    && gpgconf --kill all \
+    && rm -rf "$GNUPGHOME" \
+    && apt-get update  \
+    && apt-get install --no-install-recommends -y postgresql-client \
+    && rm -f /etc/apt/sources.list.d/pgdg.list \
+    && rm -rf /var/lib/apt/lists/*
+
 RUN curl -sLO "https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-3/wkhtmltox_0.12.6.1-3.jammy_amd64.zip" && \
     unzip wkhtmltox_0.12.5-1.jammy_amd64.zip && \
     dpkg -i "wkhtmltox_0.12.5-1.jammy_amd64.deb"
