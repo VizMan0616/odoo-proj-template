@@ -67,7 +67,7 @@ RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ focal-pgdg main' > /etc/a
 {% endif %}
 
 {% if cookiecutter.ubuntu_release == 'jammy' %}
-RUN curl -sLO "https://github.com/wkhtmltopdf/packaging/files/8632951/wkhtmltox_0.12.5-1.jammy_amd64.zip" && \
+RUN curl -sLO "https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-3/wkhtmltox_0.12.6.1-3.jammy_amd64.zip" && \
     unzip wkhtmltox_0.12.5-1.jammy_amd64.zip && \
     dpkg -i "wkhtmltox_0.12.5-1.jammy_amd64.deb"
 {% endif %}
