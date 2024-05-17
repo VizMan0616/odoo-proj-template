@@ -81,8 +81,6 @@ RUN pip install isort black pylint_odoo
 {% endif %}
 
 # Install Odoo
-ARG ODOO_VERSION
-ARG ODOO_RELEASE
 RUN curl -o odoo.deb -sSL http://nightly.odoo.com/{{ cookiecutter.odoo_version }}/nightly/deb/odoo_{{ cookiecutter.odoo_version }}.latest_all.deb \
     && apt-get update \
     && apt-get -y install --no-install-recommends ./odoo.deb \
@@ -94,8 +92,6 @@ COPY ./odoo.conf /etc/odoo/
 
 # Set permissions and Mount /var/lib/odoo to allow restoring filestore and /mnt/extra-addons for users addons
 RUN chown odoo /etc/odoo/odoo.conf \
-    && mkdir -p /mnt/extra-addons \
-    && chown -R odoo /mnt/extra-addons \
     && mkdir -p /mnt/custom-addons \
     && chown -R odoo /mnt/custom-addons
 VOLUME ["/var/lib/odoo", "/mnt/extra-addons", "/mnt/custom-addons"]
