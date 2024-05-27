@@ -83,9 +83,10 @@ RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ jammy-pgdg main' > /etc/a
     && rm -f /etc/apt/sources.list.d/pgdg.list \
     && rm -rf /var/lib/apt/lists/*
 
-RUN curl -sLO "https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-3/wkhtmltox_0.12.6.1-3.jammy_amd64.zip" && \
-    unzip wkhtmltox_0.12.5-1.jammy_amd64.zip && \
-    dpkg -i "wkhtmltox_0.12.5-1.jammy_amd64.deb"
+RUN curl -o wkhtmltox.deb -sSL "https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-3/wkhtmltox_0.12.6.1-3.jammy_amd64.deb" \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends ./wkhtmltox.deb \
+    && rm -rf /var/lib/apt/lists/* wkhtmltox.deb
 {% endif %}
 
 # Install rtlcss (on Debian buster)
