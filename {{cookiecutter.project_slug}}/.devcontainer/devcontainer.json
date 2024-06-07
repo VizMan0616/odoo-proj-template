@@ -13,36 +13,37 @@
 				"python.defaultInterpreterPath": "/usr/bin/python3",
 				"autoDocstring.docstringFormat": "sphinx-notypes",
 				"[python]": {
-					"editor.defaultFormatter": "ms-python.black-formatter",
+					"editor.defaultFormatter": "charliermarsh.ruff",
 					"editor.rulers": [
 						72,
 						88
 					],
 					"editor.codeActionsOnSave": {
-						"source.organizeImports": "always"
+						"source.organizeImports": "explicit"
 					}
-				},
-				"isort.args": [
-					"--profile",
-					"black"
-				],
-				"pylint.args": [
-					"--load-plugins=pylint_odoo",
-					"--valid-odoo-version={{ cookiecutter.odoo_version }}",
-					"-e odoolint"
-				],
-				"black-formatter.args": [
-					"--line-length=88"
-				]
+				}
+				// "isort.args": [
+				// 	"--profile",
+				// 	"black"
+				// ],
+				// "pylint.args": [
+				// 	"--load-plugins=pylint_odoo",
+				// 	"--valid-odoo-version={{ cookiecutter.odoo_version }}",
+				// 	"-e odoolint"
+				// ],
+				// "black-formatter.args": [
+				// 	"--line-length=88"
+				// ]
 			},
 			"extensions": [
 				// ---------------------------- Odoo & Python
 				"ms-python.python",
 				"ms-python.vscode-pylance",
 				"njpwerner.autodocstring",
-				"ms-python.pylint",
-				"ms-python.black-formatter",
-				"ms-python.isort",
+				"charliermarsh.ruff",
+				// "ms-python.pylint",
+				// "ms-python.black-formatter",
+				// "ms-python.isort",
 				"Odoo.owl-vision",
 				"jigar-patel.OdooSnippets",
 				// --------------------------- JavaScript
