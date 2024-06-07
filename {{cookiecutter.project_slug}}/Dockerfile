@@ -94,7 +94,8 @@ RUN npm install -g rtlcss
 
 {% if cookiecutter.debug == 'y' %}
 # Install Code Quality Tools
-RUN pip install isort black pylint_odoo
+# RUN pip install isort black pylint_odoo
+RUN pip3 install ruff
 {% endif %}
 
 # Install Odoo
