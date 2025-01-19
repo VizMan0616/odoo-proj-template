@@ -112,7 +112,7 @@ COPY ./odoo.conf /etc/odoo/
 RUN chown odoo /etc/odoo/odoo.conf \
     && mkdir -p /mnt/custom-addons \
     && chown -R odoo /mnt/custom-addons
-VOLUME ["/var/lib/odoo", "/mnt/extra-addons", "/mnt/custom-addons"]
+VOLUME ["/var/lib/odoo", "/mnt/custom-addons"]
 
 # Expose Odoo services
 EXPOSE 8069 8071 8072
@@ -121,7 +121,7 @@ EXPOSE 8069 8071 8072
 ENV ODOO_RC /etc/odoo/odoo.conf
 
 {% if cookiecutter.debug == 'y' %}
-COPY [".isort.cfg", ".eslint.yml", ".pylintrc", "/mnt/"]
+COPY [".eslint.yml", "ruff.toml", "/mnt/"]
 {% endif %}
 COPY wait-for-psql.py /usr/local/bin/wait-for-psql.py
 
