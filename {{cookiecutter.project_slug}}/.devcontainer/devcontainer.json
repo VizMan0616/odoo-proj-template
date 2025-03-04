@@ -22,18 +22,6 @@
 						"source.organizeImports": "explicit"
 					}
 				}
-				// "isort.args": [
-				// 	"--profile",
-				// 	"black"
-				// ],
-				// "pylint.args": [
-				// 	"--load-plugins=pylint_odoo",
-				// 	"--valid-odoo-version={{ cookiecutter.odoo_version }}",
-				// 	"-e odoolint"
-				// ],
-				// "black-formatter.args": [
-				// 	"--line-length=88"
-				// ]
 			},
 			"extensions": [
 				// ---------------------------- Odoo & Python
@@ -41,9 +29,7 @@
 				"ms-python.vscode-pylance",
 				"njpwerner.autodocstring",
 				"charliermarsh.ruff",
-				// "ms-python.pylint",
-				// "ms-python.black-formatter",
-				// "ms-python.isort",
+				"trinhanhngoc.vscode-odoo",
 				"Odoo.owl-vision",
 				"jigar-patel.OdooSnippets",
 				// --------------------------- JavaScript

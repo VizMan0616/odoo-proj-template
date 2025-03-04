@@ -4,11 +4,11 @@ import subprocess
 import time
 import hashlib
 
-from configparser import ConfigParser
+from configparser import RawConfigParser
 
-repository = "git@github.com:{{ cookiecutter.github_user }}/{{ cookiecutter.github_repo }}.git"
-config = ConfigParser()
-rcfile = os.path.abspath(f"{os.curdir}/odoo.conf")
+repository = "git@{{ cookiecutter.git_server }}:{{ cookiecutter.github_user }}/{{ cookiecutter.github_repo }}.git"
+config = RawConfigParser()
+rcfile = os.path.abspath(f"{os.curdir}/config/odoo.conf")
 
 GIT_COMMANDS_QUEUE = [
     ["init"],
@@ -26,7 +26,7 @@ def execute_git(*args) -> str:
         return True, ex.stderr.decode("utf-8")
 
 config.read([rcfile])
-config["options"]["admin_passw"] = hashlib.sha1(str(time.time()).encode()).hexdigest()
+config["options"]["admin_passwd"] = hashlib.sha1(str(time.time()).encode()).hexdigest()
 config.write(open(rcfile, "w"))
 
 for commands in GIT_COMMANDS_QUEUE:
