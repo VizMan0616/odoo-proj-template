@@ -24,7 +24,7 @@ RUN apt update \
         libssl-dev \
         node-less \
         npm \
-    {% if cookiecutter.odoo_version == "17.0" %}
+    {% if cookiecutter.odoo_version in ["17.0", "18.0"] %}
         python3-odf \
         python3-pdfminer \
     {% endif%}
@@ -42,7 +42,7 @@ RUN apt update \
         python3-xlrd \
         python3-xlwt \
         xz-utils \
-    {% if cookiecutter.ubuntu_release == 'jammy' %}
+    {% if cookiecutter.ubuntu_release in ['jammy', 'noble'] %}
         python3-magic \
         xfonts-75dpi \
         libx11-6 \
@@ -53,7 +53,6 @@ RUN apt update \
         unzip \
     {% endif %}
     && rm -rf /var/lib/apt/lists/*
-
 {% if cookiecutter.ubuntu_release == 'focal' %}
 RUN curl -o wkhtmltox.deb -sSL https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.focal_amd64.deb \
     && echo 'ae4e85641f004a2097621787bf4381e962fb91e1 wkhtmltox.deb' | sha1sum -c - \
@@ -67,10 +66,8 @@ RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ focal-pgdg main' > /etc/a
     && apt install --no-install-recommends -y postgresql-client-$PGVERSION \
     && rm -f /etc/apt/sources.list.d/pgdg.list \
     && rm -rf /var/lib/apt/lists/*
-{% endif %}
-
-{% if cookiecutter.ubuntu_release == 'jammy' %}
-RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ jammy-pgdg main' > /etc/apt/sources.list.d/pgdg.list \
+{% else %}
+RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ {{ cookiecutter.ubuntu_release }}-pgdg main' > /etc/apt/sources.list.d/pgdg.list \
     && GNUPGHOME="$(mktemp -d)" \
     && export GNUPGHOME \
     && repokey='B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8' \
@@ -91,16 +88,14 @@ RUN curl -o wkhtmltox.deb -sSL "https://github.com/wkhtmltopdf/packaging/release
 
 # Install rtlcss (on Debian buster)
 RUN npm install -g rtlcss
-
 {% if cookiecutter.debug == 'y' %}
 # Install Code Quality Tools
 # RUN pip install isort black pylint_odoo
 RUN pip3 install ruff
 {% endif %}
-
 # Install Odoo
-RUN curl -o odoo.deb -sSL http://nightly.odoo.com/{{ cookiecutter.odoo_version }}/nightly/deb/odoo_{{ cookiecutter.odoo_version }}.latest_all.deb \
-    && apt-get update \
+ADD http://nightly.odoo.com/{{ cookiecutter.odoo_version }}/nightly/deb/odoo_{{ cookiecutter.odoo_version }}.latest_all.deb ./odoo.deb
+RUN apt-get update \
     && apt-get -y install --no-install-recommends ./odoo.deb \
     && rm -rf /var/lib/apt/lists/* odoo.deb
 
