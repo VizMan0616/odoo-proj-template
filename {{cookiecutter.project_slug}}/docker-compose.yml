@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   odoo:
     container_name: {{ cookiecutter.project_slug }}
