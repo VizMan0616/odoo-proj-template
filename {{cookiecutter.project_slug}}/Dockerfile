@@ -91,7 +91,7 @@ RUN npm install -g rtlcss
 {% if cookiecutter.debug == 'y' %}
 # Install Code Quality Tools
 # RUN pip install isort black pylint_odoo
-RUN pip3 install ruff
+RUN pip3 install ruff --break-system-packages
 {% endif %}
 # Install Odoo
 ADD http://nightly.odoo.com/{{ cookiecutter.odoo_version }}/nightly/deb/odoo_{{ cookiecutter.odoo_version }}.latest_all.deb ./odoo.deb
@@ -120,6 +120,7 @@ COPY [".eslint.yml", "ruff.toml", "/mnt/"]
 {% endif %}
 COPY wait-for-psql.py /usr/local/bin/wait-for-psql.py
 
+RUN chmod +x /entrypoint.sh /usr/local/bin/wait-for-psql.py
 # Set default user when running the container
 USER odoo
 
