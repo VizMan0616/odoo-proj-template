@@ -24,7 +24,7 @@ RUN apt update \
         libssl-dev \
         node-less \
         npm \
-    {% if cookiecutter.odoo_version in ["17.0", "18.0"] %}
+    {% if cookiecutter.odoo_version in ["17.0", "18.0", "19.0"] %}
         python3-odf \
         python3-pdfminer \
     {% endif%}

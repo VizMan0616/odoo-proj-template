@@ -6,7 +6,7 @@
     "github_repo": "example-repo",
     "use_docker": "y",
     "ubuntu_release": ["noble", "jammy", "focal", "bionic"],
-    "odoo_version": ["18.0", "17.0", "16.0", "15.0", "14.0"],
+    "odoo_version": ["19.0", "18.0", "17.0", "16.0", "15.0", "14.0"],
     "postgresql_version": ["17", "16", "15", "14", "13", "12", "11", "10"],
     "include_pg_admin": "n",
     "debug": "n"

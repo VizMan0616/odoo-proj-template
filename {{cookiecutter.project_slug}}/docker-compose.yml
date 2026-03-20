@@ -33,8 +33,6 @@ services:
       PGADMIN_DEFAULT_EMAIL: josevizcaya0616@gmail.com
       PGADMIN_DEFAULT_PASSWORD: odoo
       PGADMIN_CONFIG_SERVER_MODE: 'False'
-    networks:
-      - postgres_bd
     volumes:
         - pgadmin:/root/.pgadmin
     ports:
