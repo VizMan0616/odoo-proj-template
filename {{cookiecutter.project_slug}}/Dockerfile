@@ -91,7 +91,11 @@ RUN npm install -g rtlcss
 {% if cookiecutter.debug == 'y' %}
 # Install Code Quality Tools
 # RUN pip install isort black pylint_odoo
+{% if cookiecutter.ubuntu_release in ['noble'] %}
+RUN pip3 install ruff --break-system-packages
+{% else %}
 RUN pip3 install ruff
+{% endif %}
 {% endif %}
 # Install Odoo
 ADD http://nightly.odoo.com/{{ cookiecutter.odoo_version }}/nightly/deb/odoo_{{ cookiecutter.odoo_version }}.latest_all.deb ./odoo.deb
