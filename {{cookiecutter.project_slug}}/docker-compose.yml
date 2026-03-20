@@ -15,7 +15,13 @@ services:
     # restart: unless-stopped
   db:
     container_name: {{ cookiecutter.project_slug }}_db
+    {% if cookiecutter.odoo_version == '19.0' %}
+    build:
+      context: .
+      dockerfile: Dockerfile.db
+    {% else %}
     image: postgres:{{ cookiecutter.postgresql_version }}
+    {% endif %}
     environment:
       - POSTGRES_USER=odoo
       - POSTGRES_PASSWORD=odoo
@@ -24,6 +30,9 @@ services:
       - "${POSTGRES_EXT_PORT}:5432"
     volumes:
         - db:/var/lib/postgresql/data
+        {% if cookiecutter.odoo_version == '19.0' %}
+        - ./config/init-pgvector.sql:/docker-entrypoint-initdb.d/init-pgvector.sql
+        {% endif %}
     # restart: unless-stopped
 {% if cookiecutter.include_pg_admin == 'y' %}
   pgadmin:
