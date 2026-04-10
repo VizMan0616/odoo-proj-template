@@ -1,5 +1,5 @@
-import sys
 import subprocess
+import sys
 
 
 def execute_git(*args) -> str:

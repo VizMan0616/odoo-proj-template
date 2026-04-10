@@ -1,14 +1,13 @@
-import subprocess
-import shutil
-import sys
-import os
-import time
 import hashlib
+import os
 import re
-
+import shutil
+import subprocess
+import sys
+import time
 from configparser import RawConfigParser
 from pathlib import Path
-from typing import List, Dict, Tuple
+from typing import Dict, List, Tuple
 
 
 class FileReplace:
