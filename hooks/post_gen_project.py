@@ -1,5 +1,5 @@
-import shutil
 import subprocess
+import shutil
 import sys
 import os
 import time
@@ -79,10 +79,19 @@ def generate_volume_block(addons_list: List[str], always_include: List[str] = No
     return f"VOLUME [{', '.join(f'"{v}"' for v in all_volumes)}]"
 
 
-def execute_git(*args) -> str:
+def execute_git(cmds: List[str], verbose: bool = False) -> str:
     try:
-        output = subprocess.run(["git", *args], capture_output=True, check=True)
-        return False, output.stdout.decode("utf-8")
+        if verbose:
+            PIPE = subprocess.PIPE
+            process = subprocess.Popen(["git"] + cmds, stdout=PIPE, text=True, bufsize=1)
+            for line in iter(process.stdout.readline, ""):
+                print(line.strip())
+
+            process.stdout.close()
+            return False, ""
+        else:
+            output = subprocess.run(["git"] + cmds, capture_output=True, check=True)
+            return False, output.stdout.decode("utf-8")
     except Exception as ex:
         return True, ex.stderr.decode("utf-8")
 
@@ -159,10 +168,10 @@ composefile = os.path.join(CWD, "docker-compose.yml")
 dockerfile = os.path.join(CWD, "Dockerfile")
 repository = "git@{{ cookiecutter.git_server }}:{{ cookiecutter.github_user }}/{{ cookiecutter.github_repo }}.git"
 GIT_COMMANDS_QUEUE = [
-    ["init"],
-    ["remote", "add", "origin", repository],
-    ["fetch", "origin"],
-    ["remote", "set-head", "origin", "--auto"]
+    (["init"], False),
+    (["remote", "add", "origin", repository], False),
+    (["fetch", "origin"], True),
+    (["remote", "set-head", "origin", "--auto"], False)
 ]
 
 if "{{ cookiecutter.odoo_version }}" != "19.0":
@@ -178,18 +187,18 @@ if "{{ cookiecutter.github_user }}" != "ExampleUser" and "{{ cookiecutter.github
         print("Template '.gitignore' will be deleted because it may block checkout.")
         os.remove(os.path.join(CWD, ".gitignore"))
 
-    for commands in GIT_COMMANDS_QUEUE:
-        err, output = execute_git(*commands)
+    for commands, verbose in GIT_COMMANDS_QUEUE:
+        err, output = execute_git(commands, verbose=verbose)
         if err:
             print(output)
             sys.exit(1)
         if output:
             print(output)
 
-    _, branch = execute_git("symbolic-ref", "refs/remotes/origin/HEAD", "--short")
+    _, branch = execute_git(["symbolic-ref", "refs/remotes/origin/HEAD", "--short"])
     branch = branch.strip("\n").split("/")[1]
 
-    err, output = execute_git("checkout", branch)
+    err, output = execute_git(["checkout", branch], verbose=True)
     if err:
         print(output)
         sys.exit(1)
