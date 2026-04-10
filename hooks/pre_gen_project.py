@@ -14,8 +14,11 @@ odoo_version = "{{ cookiecutter.odoo_version }}"
 ubuntu_release = "{{ cookiecutter.ubuntu_release }}"
 repository = "git@{{ cookiecutter.git_server }}:{{ cookiecutter.github_user }}/{{ cookiecutter.github_repo }}.git"
 
-if odoo_version in ["16.0", "17.0"] and ubuntu_release in ["bionic", "focal"]:
-    print("Error: Odoo 16.0 should be used with Ubuntu 22.04 (Jammy Jellyfish)")
+if odoo_version in ["16.0", "17.0"] and ubuntu_release != "jammy":
+    print(f"Error: Odoo {odoo_version} should be used with Ubuntu 22.04 (Jammy Jellyfish)")
+    sys.exit(1)
+if odoo_version in ["18.0", "19.0"] and ubuntu_release != "noble":
+    print(f"Error: Odoo {odoo_version} should be used with Ubuntu 24.04 (Noble Numbat)")
     sys.exit(1)
 
 if "{{ cookiecutter.github_user }}" != "ExampleUser" and "{{ cookiecutter.github_repo }}" != "example-repo":
