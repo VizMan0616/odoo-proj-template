@@ -2,16 +2,21 @@ services:
   odoo:
     container_name: {{ cookiecutter.project_slug }}
     command: odoo --dev=all
+    {% if cookiecutter.debug != 'n' %}
     build:
       context: .
+      dockerfile: odoo.Dockerfile
+    {% else %}
+    image: odoo:{{ cookiecutter.odoo_version }}
+    {% endif %}
     depends_on:
       - db
     ports:
       - "${ODOO_EXT_PORT}:8069"
     volumes:
       - odoo:/var/lib/odoo
-      - ./config:/etc/odoo
-      - ./addons:/mnt/custom-addons
+      - ./config:/etc/odoo:z
+      - ./addons:/mnt/custom-addons:z
     # restart: unless-stopped
   db:
     container_name: {{ cookiecutter.project_slug }}_db

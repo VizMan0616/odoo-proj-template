@@ -7,6 +7,7 @@
 	"remoteUser": "root",
 	"workspaceFolder": "/mnt/",
 	"shutdownAction": "none",
+	{% if cookiecutter.vscode != 'n' %}
 	"customizations": {
 		"vscode": {
 			"settings": {
@@ -47,4 +48,5 @@
 			]
 		}
 	}
+  {% endif %}
 }

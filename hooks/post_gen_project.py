@@ -47,7 +47,9 @@ class FileReplace:
             modified_content = self.apply_replacements(replacements)
 
             if dry_run:
-                print(f"Original {self.file_path}\n{self.original_content}\n\nModified {self.file_path}\n{modified_content}")
+                print(
+                    f"Original {self.file_path}\n{self.original_content}\n\nModified {self.file_path}\n{modified_content}"
+                )
                 self._clean_backup()
                 return
 
@@ -61,28 +63,13 @@ class FileReplace:
             sys.exit(1)
 
 
-def generate_run_block(addons_list: List[str], base_command: str = "RUN chown odoo /etc/odoo/odoo.conf", mkdir_cmd: str = "mkdir -p", chown_cmd: str = "chown -R odoo") -> str:
-    lines = [base_command]
-    for path in addons_list:
-        lines.append(f"    && {mkdir_cmd} {path}")
-        lines.append(f"    && {chown_cmd} {path}")
-
-    return " \\\n".join(lines)
-
-
-def generate_volume_block(addons_list: List[str], always_include: List[str] = None) -> str:
-    if always_include is None:
-        always_include = []
-
-    all_volumes = always_include + addons_list
-    return f"VOLUME [{', '.join(f'"{v}"' for v in all_volumes)}]"
-
-
 def execute_git(cmds: List[str], verbose: bool = False) -> (bool, str):
     try:
         if verbose:
             PIPE = subprocess.PIPE
-            process = subprocess.Popen(["git"] + cmds, stdout=PIPE, text=True, bufsize=1)
+            process = subprocess.Popen(
+                ["git"] + cmds, stdout=PIPE, text=True, bufsize=1
+            )
             for line in iter(process.stdout.readline, ""):
                 print(line.strip())
 
@@ -95,26 +82,15 @@ def execute_git(cmds: List[str], verbose: bool = False) -> (bool, str):
         return True, ex.stderr.decode("utf-8")
 
 
-class DockerfileReplacer(FileReplace):
-    def get_replacements(self, addons_list: List[str]) -> dict:
-        run_pattern = r"RUN\s+chown\s+odoo\s+/etc/odoo/odoo\.conf\s+.*?(?=\n\S|\Z)"
-        volume_pattern = r"VOLUME\s+\[[^\]]*\]"
-
-        return {
-            run_pattern: generate_run_block(addons_list),
-            volume_pattern: generate_volume_block(addons_list, always_include=["/var/lib/odoo"])
-        }
-
-
 class ComposeReplacer(FileReplace):
     def get_replacements(self, addons_list: List[Tuple[str, str]]) -> dict:
         volume_lines = []
 
         volume_lines.append("      - odoo:/var/lib/odoo")
-        volume_lines.append("      - ./config:/etc/odoo")
+        volume_lines.append("      - ./config:/etc/odoo:z")
 
         for path in addons_list:
-            volume_lines.append(f"      - ./{path[0]}:{path[1]}")
+            volume_lines.append(f"      - ./{path[0]}:{path[1]}:z")
 
         def replace_volume_section(content: str):
             lines = content.split("\n")
@@ -124,7 +100,7 @@ class ComposeReplacer(FileReplace):
 
             for line in lines:
                 if re.match(r"^  [a-zA-Z0-9_-]+:", line):
-                    in_odoo_service = ("odoo:" in line)
+                    in_odoo_service = "odoo:" in line
                     in_volume_section = False
 
                 if in_odoo_service and re.match(r"^    volumes:", line):
@@ -158,19 +134,19 @@ class ComposeReplacer(FileReplace):
                 content = re.sub(pattern, replacement, content, flags=re.DOTALL)
         return content
 
+
 CWD = Path.cwd()
 MODULE_INDEX = "__manifest__.py"
 config = RawConfigParser()
 compose = None
 rcfile = os.path.join(CWD, "config", "odoo.conf")
 composefile = os.path.join(CWD, "docker-compose.yml")
-dockerfile = os.path.join(CWD, "Dockerfile")
 repository = "git@{{ cookiecutter.git_server }}:{{ cookiecutter.github_user }}/{{ cookiecutter.github_repo }}.git"
 GIT_COMMANDS_QUEUE = [
     (["init"], False),
     (["remote", "add", "origin", repository], False),
     (["fetch", "origin"], True),
-    (["remote", "set-head", "origin", "--auto"], False)
+    (["remote", "set-head", "origin", "--auto"], False),
 ]
 
 if "{{ cookiecutter.odoo_version }}" != "19.0":
@@ -181,7 +157,20 @@ if "{{ cookiecutter.odoo_version }}" != "19.0":
         print("Removing 'init-pgvector.sql' file...")
         os.remove(os.path.join(CWD, "config", "init-pgvector.sql"))
 
-if "{{ cookiecutter.github_user }}" != "ExampleUser" and "{{ cookiecutter.github_repo }}" != "example-repo":
+if "{{ cookiecutter.debug }}" == "n":
+    if os.path.exists(os.path.join(CWD, "odoo.Dockerfile")):
+        print("Removing 'odoo.Dockerfile' file...")
+        os.remove(os.path.join(CWD, "odoo.Dockerfile"))
+
+if "{{ cookiecutter.devcontainers }}" == "n":
+    if os.path.exists(os.path.join(CWD, ".devcontainer")):
+        print("Removing '.devcontainer' directory...")
+        shutil.rmtree(os.path.join(CWD, ".devcontainer"))
+
+if (
+    "{{ cookiecutter.github_user }}" != "ExampleUser"
+    and "{{ cookiecutter.github_repo }}" != "example-repo"
+):
     if os.path.exists(os.path.join(CWD, ".gitignore")):
         print("Template '.gitignore' will be deleted because it may block checkout.")
         os.remove(os.path.join(CWD, ".gitignore"))
@@ -200,7 +189,9 @@ if "{{ cookiecutter.github_user }}" != "ExampleUser" and "{{ cookiecutter.github
     execute_git(["checkout", branch], verbose=True)
 
     if os.path.exists(os.path.join(CWD, ".gitmodules")):
-        execute_git(["submodule", "update", "--init", "--recursive", "--progress"], verbose=True)
+        execute_git(
+            ["submodule", "update", "--init", "--recursive", "--progress"], verbose=True
+        )
 
 modules_container = []
 modules = []
@@ -233,16 +224,16 @@ if modules_container:
 
     config["options"]["addons_path"] = ",".join(volume_modules)
 
-    dockerfile_replacer = DockerfileReplacer(dockerfile)
     compose_replacer = ComposeReplacer(composefile)
-
-    dockerfile_replacements = dockerfile_replacer.get_replacements(volume_modules)
-    dockerfile_replacer.execute(dockerfile_replacements)
-
-    compose_replacements = compose_replacer.get_replacements(zip(modules_container, volume_modules))
+    compose_replacements = compose_replacer.get_replacements(
+        zip(modules_container, volume_modules)
+    )
     compose_replacer.execute(compose_replacements)
 else:
-    extra_files = [(os.path.join(CWD, ".git"), ".git"), (os.path.join(CWD, "README.md"), "README.md")]
+    extra_files = [
+        (os.path.join(CWD, ".git"), ".git"),
+        (os.path.join(CWD, "README.md"), "README.md"),
+    ]
     modules_to_move = [(os.path.join(CWD, f), f) for f in modules] + extra_files
     dir_to_move = os.path.join(CWD, "addons")
     os.remove(os.path.join(dir_to_move, ".gitkeep"))
@@ -253,10 +244,6 @@ else:
             shutil.move(module_to_move[0], dir_to_move)
 
 entrypoints = ["entrypoint.sh", "wait-for-psql.py"]
-subprocess.call([
-    "chmod",
-    "+x",
-    *[os.path.join(CWD, f) for f in entrypoints]
-])
+subprocess.call(["chmod", "+x", *[os.path.join(CWD, f) for f in entrypoints]])
 
 config.write(open(rcfile, "w"))
