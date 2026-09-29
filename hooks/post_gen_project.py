@@ -149,7 +149,7 @@ GIT_COMMANDS_QUEUE = [
     (["remote", "set-head", "origin", "--auto"], False),
 ]
 
-if "{{ cookiecutter.odoo_version }}" != "19.0":
+if "{{ cookiecutter.odoo_version }}" not in ("20.0", "19.0"):
     if os.path.exists(os.path.join(CWD, "postgres.Dockerfile")):
         print("Removing 'postgres.Dockerfile' file...")
         os.remove(os.path.join(CWD, "postgres.Dockerfile"))
