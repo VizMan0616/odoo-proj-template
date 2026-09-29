@@ -32,8 +32,12 @@ exclude = [
 line-length = 88
 indent-width = 4
 
+{% if cookiecutter.odoo_version == '20.0' %}
+target-version = "py312"
+{% else %}
 # Assume Python 3.10
 target-version = "py310"
+{% endif %}
 
 [lint]
 # Enable Pyflakes (`F`) and a subset of the pycodestyle (`E`)  codes by default.
