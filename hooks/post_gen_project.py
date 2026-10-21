@@ -149,14 +149,6 @@ GIT_COMMANDS_QUEUE = [
     (["remote", "set-head", "origin", "--auto"], False),
 ]
 
-if "{{ cookiecutter.odoo_version }}" != "19.0":
-    if os.path.exists(os.path.join(CWD, "postgres.Dockerfile")):
-        print("Removing 'postgres.Dockerfile' file...")
-        os.remove(os.path.join(CWD, "postgres.Dockerfile"))
-    if os.path.exists(os.path.join(CWD, "config", "init-pgvector.sql")):
-        print("Removing 'init-pgvector.sql' file...")
-        os.remove(os.path.join(CWD, "config", "init-pgvector.sql"))
-
 if "{{ cookiecutter.debug }}" == "n":
     if os.path.exists(os.path.join(CWD, "odoo.Dockerfile")):
         print("Removing 'odoo.Dockerfile' file...")
