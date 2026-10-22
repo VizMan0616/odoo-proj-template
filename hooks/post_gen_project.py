@@ -235,7 +235,4 @@ else:
             print(f"Moving {module_to_move[1]}...")
             shutil.move(module_to_move[0], dir_to_move)
 
-entrypoints = ["entrypoint.sh", "wait-for-psql.py"]
-subprocess.call(["chmod", "+x", *[os.path.join(CWD, f) for f in entrypoints]])
-
 config.write(open(rcfile, "w"))
