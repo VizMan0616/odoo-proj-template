@@ -1,5 +1,6 @@
 {
 	"name": "{{ cookiecutter.project_name }}",
+	"runServices": ["odoo", "db"],
 	"dockerComposeFile": [
 		"../docker-compose.yml"
 	],

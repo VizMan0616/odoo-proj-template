@@ -149,14 +149,6 @@ GIT_COMMANDS_QUEUE = [
     (["remote", "set-head", "origin", "--auto"], False),
 ]
 
-if "{{ cookiecutter.odoo_version }}" != "19.0":
-    if os.path.exists(os.path.join(CWD, "postgres.Dockerfile")):
-        print("Removing 'postgres.Dockerfile' file...")
-        os.remove(os.path.join(CWD, "postgres.Dockerfile"))
-    if os.path.exists(os.path.join(CWD, "config", "init-pgvector.sql")):
-        print("Removing 'init-pgvector.sql' file...")
-        os.remove(os.path.join(CWD, "config", "init-pgvector.sql"))
-
 if "{{ cookiecutter.debug }}" == "n":
     if os.path.exists(os.path.join(CWD, "odoo.Dockerfile")):
         print("Removing 'odoo.Dockerfile' file...")
@@ -242,8 +234,5 @@ else:
         if os.path.exists(module_to_move[0]):
             print(f"Moving {module_to_move[1]}...")
             shutil.move(module_to_move[0], dir_to_move)
-
-entrypoints = ["entrypoint.sh", "wait-for-psql.py"]
-subprocess.call(["chmod", "+x", *[os.path.join(CWD, f) for f in entrypoints]])
 
 config.write(open(rcfile, "w"))
